@@ -15,6 +15,7 @@ lxml
 pyasn1
 xlrd==1.2.0
 tkinter
+openpyxl
 '''
 
 # git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
