@@ -9,6 +9,7 @@ import tkinter.filedialog as filedialog
 import os
 import pandas as pd
 import re
+from ReadData import *
 
 
 def get_path():
@@ -57,6 +58,15 @@ def get_FBG_data(_files):
     return all_data_
 
 
+def read_excel_files(_files):
+    all_data_ = {}
+    global path
+    if len(_files) != 0:
+        for i_ in _files:
+            all_data_[i_] = ReadData(os.path.join(path, i_)).get_df
+    return all_data_
+
+
 def txt_to_df(txt_data_):
     sp_data = lambda n: n.split('\n')[0].split('\t')
     sp_list = list(map(sp_data, txt_data_[1:]))
@@ -98,12 +108,11 @@ def sort_temp(keys_, flag_, up_=True):
             else:
                 down_list.append(int(re.findall('[0-9]+', i_)[0]))
                 down_name.append(i_)
-    up_list.sort()
-    down_list.sort()
-
     if up_:
+        up_list = sorted(up_list, reverse=False)
         return get_name(up_list, up_name)
     else:
+        down_list = sorted(down_list, reverse=True)
         return get_name(down_list, down_name)
 
 
@@ -112,25 +121,31 @@ if __name__ == '__main__':
     file_type = 'txt'
     path = get_path()
     files = getdir(file_type)
-    all_data = get_FBG_data(files)
+    print(files)
+    if file_type == 'txt':
+        all_data = get_FBG_data(files)
+    else:
+        all_data = read_excel_files(files)
+
     FBG1_df = pd.DataFrame()
     FBG2_df = pd.DataFrame()
     FBG3_df = pd.DataFrame()
     FBG4_df = pd.DataFrame()
 
     # 获得含有df的dict，正负需要修改函数里
-    after_sort = sort_temp(all_data.keys(), 'sen', True)
+    after_sort = sort_temp(all_data.keys(), 'g', True)
+    print(after_sort)
     for i in after_sort:
         df = all_data[i]
         # FBG1_df = pd.concat([FBG1_df, df['#-0']], axis=1)
         # FBG2_df = pd.concat([FBG2_df, df['#-1']], axis=1)
-        FBG1_df = pd.concat([FBG1_df, df['FBG_A1']], axis=1)
-        FBG2_df = pd.concat([FBG2_df, df['FBG_A1']], axis=1)
+        FBG1_df = pd.concat([FBG1_df, df['FBG_C1']], axis=1)
+        FBG2_df = pd.concat([FBG2_df, df['FBG_D1']], axis=1)
         # FBG3_df = pd.concat([FBG3_df, df['#-2']], axis=1)
         # FBG4_df = pd.concat([FBG4_df, df['#-3']], axis=1)
 
-    FBG1_df.to_excel(os.path.join(path, 'FBG1-sen升温.xlsx'), index=False)
-    FBG2_df.to_excel(os.path.join(path, 'FBG2-sen升温.xlsx'), index=False)
+    FBG1_df.to_excel(os.path.join(r'D:\code\DataProcessing\data\压力实验-用', '第四次-FBG1-加载.xlsx'), index=False)
+    FBG2_df.to_excel(os.path.join(r'D:\code\DataProcessing\data\压力实验-用', '第四次-FBG2-加载.xlsx'), index=False)
     # FBG3_df.to_excel(os.path.join(path, 'FBG3-peak降温.xlsx'), index=False)
     # FBG4_df.to_excel(os.path.join(path, 'FBG4-peak降温.xlsx'), index=False)
     # FBG3_df.to_excel(os.path.join(path, '裸升温.xlsx'), index=False)

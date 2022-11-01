@@ -28,7 +28,6 @@ class ReadData(object):
         self.npy_path = os.path.join(self.tmp, self.b64_name + '.npy')
         self.npy_c_path = os.path.join(self.tmp, self.b64_name + '_c' + '.npy')
         self.sheet_name = sheet_name
-        print(self.tmp)
 
     def __read_data(self):
         '''

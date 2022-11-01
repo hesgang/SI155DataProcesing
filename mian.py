@@ -7,19 +7,17 @@
 from ReadData import *
 import tkinter.filedialog as filedialog
 
-
-def getDataWithOpenWindow():
-    filepath = filedialog.askopenfilenames()
-    for _i in filepath:
-        print(_i)
+from PySide2.QtWidgets import QApplication, QMessageBox
+from PySide2.QtUiTools import QUiLoader
+from PySide2.QtCore import QFile
+# from lib.share import SI
 
 
 
 if __name__ == '__main__':
-    getDataWithOpenWindow()
-    # start_time = time.process_time()
-    # aa = ReadData(r'D:\code\DataProcessing\data\2022\s5-20220805151008.xlsx').get_df
-    # print(aa)
-    # end = time.process_time() - start_time
-    # print('总耗时：%s' % end)
+    app = QApplication([])
+    main_ui = MainUI()
+    main_ui.ui.show()
+    app.exec_()
+
 

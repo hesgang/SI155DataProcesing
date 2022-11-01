@@ -87,6 +87,20 @@ class AppUI(object):
         # --------------------画布1end-----------------
 
         # --------------------画布2begin-----------------
+        self.entry21 = Entry(self.frame2, width=75)
+        self.entry21.grid(sticky=W + N, row=0, column=0, columnspan=6, padx=10, pady=10)
+        self.entry21.insert(0, os.getcwd())
+        self.button21 = Button(self.frame2, text="选择文件夹")
+        self.button21.bind("<ButtonRelease>", self.callback_enter)
+        self.button21.grid(sticky=W + N, row=0, column=6, padx=5, pady=5)
+
+        # 创建loistbox用来显示所有文件名
+        self.listbox_filename21 = Listbox(self.frame2, width=30, height=11, selectmode="extended")
+        self.getdir()
+        self.listbox_filename21.grid(row=1, column=0, columnspan=3, rowspan=6,
+                              padx=5, pady=5, sticky=W + E + N)
+        self.listbox2file21 = Listbox(self.frame1, width=40, height=11)
+        self.listbox2file21.grid(row=1, column=5, columnspan=2, rowspan=6, padx=5, pady=5, sticky=W + E + N)
 
         # --------------------画布2end-----------------
 
@@ -107,13 +121,23 @@ class AppUI(object):
             self.log.delete('1.0', END)
             self.log.insert(END, '当前位置： %s \n' % filepath)
             self.log.see(END)
-        else:
+        elif '{}'.format(event.widget) == '.!frame.!button2':
             self.entry12.delete(0, END)  # 清空entry里面的内容
             # 调用filedialog模块的askdirectory()函数去打开文件夹
             self.topath = filedialog.askdirectory()
             if self.topath == '':
                 self.topath = os.getcwd()
             self.entry12.insert(0, self.topath)  # 将选择好的路径加入到entry里面
+        elif '{}'.format(event.widget) == '.!frame2.!button':
+            self.entry21.delete(0, END)  # 清空entry里面的内容
+            self.listbox_filename21.delete(0, END)
+            self.listbox2file21.delete(0, END)
+            # 调用filedialog模块的askdirectory()函数去打开文件夹
+            self.openpath = filedialog.askdirectory()
+            self.topath = self.openpath
+            if self.openpath == '':
+                self.openpath = os.getcwd()
+            self.entry21.insert(0, self.openpath)  # 将选择好的路径加入到entry里面
 
     def getdir(self):
         """
@@ -191,6 +215,14 @@ class AppUI(object):
             self.log.insert(END, '该文件存在错误：\n %s \n' % e)
             self.log.see(END)
         df.to_excel(os.path.join(self.topath, file_name_), index=False)
+
+    def refresh_data(self):
+        # old_files = self.txt_file_path_
+        # print(old_files)
+        self.getdir()
+        # if len(old_files) == len(self.txt_file_path_):
+
+
 
 
 if __name__ == "__main__":
