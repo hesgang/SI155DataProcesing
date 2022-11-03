@@ -12,7 +12,7 @@ import time
 import pandas as pd
 # from lib.share import SI
 
-version = 1.3
+version = 1.4
 
 
 class MainUI:
@@ -20,6 +20,7 @@ class MainUI:
         self.open_path = os.getcwd()
         self.to_path = os.getcwd()
         self.txt_file_path_ = []  # txt文件的绝对路径列表
+        self.writer = []
         # qfile_stats = QFile('ui/MainUI.ui')
         # qfile_stats.open(QFile.ReadOnly)
         # qfile_stats.close()
@@ -34,6 +35,7 @@ class MainUI:
         self.ui.tab1_name_choice.currentIndexChanged.connect(self.callback_mode_choice)
         self.ui.open_list.itemSelectionChanged.connect(self.callback_item_changed)
         self.ui.tab1_console.setPlaceholderText('程序启动成功 - V{}  点击转换开始执行'.format(version))
+        # self.ui.tab1_merge_btn.clicked.connect(self.call_marge)
 
         # 文本获取
         self.mode_choice = self.ui.tab1_mode_choice.currentText()
@@ -82,11 +84,20 @@ class MainUI:
         if self.mode_choice == '选择模式':
             items_len = len(self.ui.open_list.selectedItems())
             self.ui.change_btn.setText('转换({})）'.format(items_len))
+            self.ui.tab1_progressBar.setRange(0, items_len)
 
     def callback_change(self):
         start_time = time.process_time()
         self.ui.tab1_console.setPlainText('开始执行转换程序')
         change_items = []
+        if self.ui.tab1_merge_btn.isChecked():
+            self.call_marge()
+        # 转换过程中禁用部分模式选择按钮按钮start
+        self.ui.tab1_mode_choice.setEnabled(False)
+        self.ui.tab1_name_choice.setEnabled(False)
+        self.ui.tab1_split_btn.setEnabled(False)
+        self.ui.tab1_merge_btn.setEnabled(False)
+        # 转换过程中禁用部分模式选择按钮按钮end
         if self.mode_choice == '选择模式':
             currentItem = self.ui.open_list.selectedItems()
             for item in currentItem:
@@ -95,7 +106,15 @@ class MainUI:
         else:
             change_items = self.txt_file_path_
             self.get_FBG_data(change_items)
+        if self.ui.tab1_merge_btn.isChecked():
+            self.writer.save()
         self.ui.tab1_console.appendPlainText('本次耗时总计：%sS' % (time.process_time() - start_time))
+        # 转换结束重新启用部分模式选择按钮按钮start
+        self.ui.tab1_mode_choice.setEnabled(True)
+        self.ui.tab1_name_choice.setEnabled(True)
+        self.ui.tab1_split_btn.setEnabled(True)
+        self.ui.tab1_merge_btn.setEnabled(True)
+        # 转换过程中禁用部分模式选择按钮按钮end
 
     def get_dir(self, _path):
         """
@@ -156,7 +175,10 @@ class MainUI:
                     df[j] = pd.to_numeric(df[j])
         except Exception as e:
             self.ui.tab1_console.appendPlainText('该文件存在错误：\n %s \n' % e)
-        df.to_excel(os.path.join(self.to_path, file_name_), index=False)
+        if self.ui.tab1_merge_btn.isChecked():
+            df.to_excel(self.writer, sheet_name=file_name_)
+        else:
+            df.to_excel(os.path.join(self.to_path, file_name_), index=False)
 
     def refreshing(self):
         self.ui.open_list.clear()
@@ -165,6 +187,9 @@ class MainUI:
         # _model.setStringList(self.txt_file_path_)
         for item in self.txt_file_path_:
             self.ui.open_list.addItem(item)
+
+    def call_marge(self):
+        self.writer = pd.ExcelWriter(os.path.join(self.to_path, 'merge.xlsx'))
 
 
 
