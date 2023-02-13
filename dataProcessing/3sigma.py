@@ -32,14 +32,34 @@ def KsNormDetect(df):  # 输出结果是服从正态分布的数据列的名字
     return list_norm_T
 
 
+# 对待处理数据中心服从正态分布的数据列
+def three_sigma(Ser1):  # Ser1：表示传入DataFrame的某一列
+    rule = []
+    rule = (Ser1.mean() - 3 * Ser1.std() > Ser1) | (Ser1.mean() + 3 * Ser1.std() < Ser1)
+    out = Ser1.index[rule]
+    return out  # 返回落在3sigma之外的行索引值
+
+
+def delete_out3sigma(data, list_norm):  # data：待检测的DataFrame；list_norm：服从正态分布的数据列名
+    out_index = []  # 保存要删除的行索引
+    for col in list_norm:  # 对每一列分别用3sigma原则处理
+        index = three_sigma(data[col])
+        out_index += index.tolist()
+    delete_ = list(set(out_index))  # 去除 out_index 中的重复元素
+    print(f'\n所删除的行索引共计{len(delete_)}个：\n', delete_)
+    data.drop(delete_, inplace=True)  # 根据 delete_ 删除对应行的数据
+    return data
+
+
 if __name__ == '__main__':
     start_time = time.process_time()
-    df1 = ReadData(r'D:\code\DataProcessing\data\压力实验-用\第一次-FBG1-加载.xlsx').get_df
-    print(KsNormDetect(df1))
+    df1 = ReadData(r'D:\压力实验to表格\第一次-FBG2-加载.xlsx').get_df
     plt.subplot(2, 1, 1)
-    plt.hist(df1['10g'], bins=500, color='pink', edgecolor='b')
+    # plt.hist(df1['10g'], bins=500, color='pink', edgecolor='b')
+    plt.plot(df1['0g'])
     plt.subplot(2, 1, 2)
-    plt.plot(df1['10g'])
+    df1 = delete_out3sigma(df1, ['0g', '10g'])
+    plt.plot(df1['0g'])
     plt.show()
 
     end = time.process_time() - start_time

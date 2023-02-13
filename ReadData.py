@@ -15,6 +15,7 @@ from pandas import ExcelWriter
 import numpy as np
 # import matplotlib.pyplot as plt
 import base64
+from logger import logger
 
 
 class ReadData(object):
@@ -55,7 +56,7 @@ class ReadData(object):
                 np.save(self.npy_c_path, df_c)
                 return df
             except Exception as e:
-                print(e)
+                logger.error(e)
                 sys.exit()
 
     @staticmethod
@@ -66,10 +67,13 @@ class ReadData(object):
         """
         _temp = os.getenv('TEMP')
         if os.path.exists('/cache'):
+            logger.info('/cache')
             return '/cache'
         elif os.path.exists(_temp):
+            logger.info(_temp)
             return _temp
         else:
+            logger.info(os.getcwd())
             return os.getcwd()
 
     @property
