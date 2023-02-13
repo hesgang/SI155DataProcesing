@@ -17,14 +17,16 @@ xlrd==1.2.0
 tkinter
 openpyxl
 PyQt5
-PyQt5-tools
+PySide2
+html5lib
+beautifulsoup4
 '''
 
 # git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
 
 version = sys.version[:6]
 if version[:3] != '3.9':
-    key = input("""The current python version is {}, which is best used 3.6\nContinue[Y\\N]:""".format(version[:3]))
+    key = input("""The current python version is {}, which is best used 3.9\nContinue[Y\\N]:""".format(version[:3]))
     while True:
         if key == 'n' or key == 'N':
             sys.exit()

@@ -3,3 +3,6 @@
 /workspace.xml
 .idea
 .xlsx
+build
+dist
+__pycache__
