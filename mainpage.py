@@ -10,9 +10,10 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile, QStringListModel, Qt
 import time
 import pandas as pd
+from logger import *
 # from lib.share import SI
 
-version = 1.4
+version = 1.5
 
 
 class MainUI:
@@ -34,7 +35,8 @@ class MainUI:
         self.ui.tab1_mode_choice.currentIndexChanged.connect(self.callback_mode_choice)
         self.ui.tab1_name_choice.currentIndexChanged.connect(self.callback_mode_choice)
         self.ui.open_list.itemSelectionChanged.connect(self.callback_item_changed)
-        self.ui.tab1_console.setPlaceholderText('程序启动成功 - V{}  点击转换开始执行'.format(version))
+        self.ui.tab1_console.setPlaceholderText('程序启动成功 - V{}  点击转换开始执行。\n拆分模式：转换的Excel'
+                                                '文件为单独的文件。\n合并模式：生成一个Excel中包含多个sheet。'.format(version))
         # self.ui.tab1_merge_btn.clicked.connect(self.call_marge)
 
         # 文本获取
@@ -186,11 +188,11 @@ class MainUI:
         # _model = QStringListModel()
         # _model.setStringList(self.txt_file_path_)
         for item in self.txt_file_path_:
-            self.ui.open_list.addItem(item)
+            logger.debug('{}'.format(os.path.split(item)))
+            self.ui.open_list.addItem(os.path.split(item)[1])
 
     def call_marge(self):
         self.writer = pd.ExcelWriter(os.path.join(self.to_path, 'merge.xlsx'))
-
 
 
 if __name__ == '__main__':

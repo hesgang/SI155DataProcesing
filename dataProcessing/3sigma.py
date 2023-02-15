@@ -53,14 +53,15 @@ def delete_out3sigma(data, list_norm):  # data：待检测的DataFrame；list_no
 
 if __name__ == '__main__':
     start_time = time.process_time()
-    df1 = ReadData(r'D:\压力实验to表格\第一次-FBG2-加载.xlsx').get_df
-    plt.subplot(2, 1, 1)
-    # plt.hist(df1['10g'], bins=500, color='pink', edgecolor='b')
-    plt.plot(df1['0g'])
-    plt.subplot(2, 1, 2)
-    df1 = delete_out3sigma(df1, ['0g', '10g'])
-    plt.plot(df1['0g'])
-    plt.show()
+    df1 = ReadData(r'C:\Users\Administrator\Desktop\FBG1升温.xlsx').get_df
+    print(KsNormDetect(df1))
+    # plt.subplot(2, 1, 1)
+    # # plt.hist(df1['10g'], bins=500, color='pink', edgecolor='b')
+    # plt.plot(df1['0g'])
+    # plt.subplot(2, 1, 2)
+    # df1 = delete_out3sigma(df1, ['0g', '10g'])
+    # plt.plot(df1['0g'])
+    # plt.show()
 
     end = time.process_time() - start_time
     print('总耗时：%s' % end)
