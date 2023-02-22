@@ -65,7 +65,22 @@ class ReadData(object):
                 except Exception as e:
                     logger.error(e)
                     sys.exit()
-
+            else:
+                try:
+                    _df = pd.ExcelFile(self.excel_path)
+                    if len(_df.sheet_names) == 1:
+                        df_1 = pd.read_excel(_df, header=0)
+                        self.__cache__(df_1)
+                        logger.info('原始文件：{}.{}--包含的{}'.format(self.file_name, self.file_type, df_1.columns))
+                        return df_1
+                    else:
+                        logger.info('原始工作簿{}存在多个sheet，如下：\n {}'.format(self.file_name, _df.sheet_names))
+                        logger.info(
+                            '其中[{}]---包含的{}'.format(_df.sheet_names[0], _df.parse(_df.sheet_names[0]).columns))
+                        return _df
+                except Exception as e:
+                    logger.error(e)
+                    sys.exit()
 
     def __cache__(self, df):
         col_types = list(set(df.dtypes.astype(str).to_list()))
