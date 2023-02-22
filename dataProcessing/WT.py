@@ -22,7 +22,9 @@ data = np.piecewise(t, [t < 1, t < 0.8, t < 0.5, t < 0.3],
 wavename = 'cgau8'
 totalscal = 256
 fc = pywt.central_frequency(wavename)
+print(fc)
 cparam = 2 * fc * totalscal
+print(cparam)
 scales = cparam / np.arange(totalscal, 1, -1)
 [cwtmatr, frequencies] = pywt.cwt(data, scales, wavename, 1.0 / sampling_rate)
 plt.figure(figsize=(8, 4))

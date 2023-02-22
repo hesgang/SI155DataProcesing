@@ -19,7 +19,8 @@ from logger import logger
 
 
 class ReadData(object):
-    def __init__(self, excel_path):
+    def __init__(self, excel_path, cache=True):
+        self.is_cache = cache
         self.tmp = self.__getTemp__()
         self.excel_path = excel_path
         self.path, self.file = os.path.split(self.excel_path)
@@ -36,37 +37,42 @@ class ReadData(object):
         :return: DataFrame -> obj
         '''
         if self.file_type in ['xlsx', 'xls']:
-            # 读取缓存文件
-            try:
-                # 根据文件修改时间，选择最新的读取
-                excel_t = os.path.getmtime(self.excel_path)
-                npy_t = os.path.getmtime(self.npy_path)
-                if npy_t > excel_t:
-                    _df = np.load(self.npy_path, allow_pickle=True)
-                    df_c = np.load(self.npy_c_path, allow_pickle=True)
-                    _df = pd.DataFrame(_df, columns=df_c)
-                    return _df
-                else:
-                    raise FileNotFoundError
-            except FileNotFoundError:
-                _df = pd.ExcelFile(self.excel_path)
-                if len(_df.sheet_names) == 1:
-                    df_1 = pd.read_excel(_df, header=0)
-                    col_types = list(set(df_1.dtypes.astype(str).to_list()))
-                    for _i in col_types:
-                        if _i not in ['float64', 'int64']:
-                            logger.debug('存在无法转换为ndarray的数据类型：{}.直接读取，不做缓存！'.format(_i))
-                            return df_1
-                    self.__cache__(df_1)
-                    return df_1
-                else:
-                    logger.info('该数据簿存在多个sheet，如下：\n {}'.format(_df.sheet_names))
-                    return _df
-            except Exception as e:
-                logger.error(e)
-                sys.exit()
+            if self.is_cache:
+                # 读取缓存文件
+                try:
+                    # 根据文件修改时间，选择最新的读取
+                    excel_t = os.path.getmtime(self.excel_path)
+                    npy_t = os.path.getmtime(self.npy_path)
+                    if npy_t > excel_t:
+                        _df = np.load(self.npy_path, allow_pickle=True)
+                        df_c = np.load(self.npy_c_path, allow_pickle=True)
+                        _df = pd.DataFrame(_df, columns=df_c)
+                        logger.info('缓存文件：{}.{}--包含的{}'.format(self.file_name, self.file_type, _df.columns))
+                        return _df
+                    else:
+                        raise FileNotFoundError
+                except FileNotFoundError:
+                    _df = pd.ExcelFile(self.excel_path)
+                    if len(_df.sheet_names) == 1:
+                        df_1 = pd.read_excel(_df, header=0)
+                        self.__cache__(df_1)
+                        logger.info('原始文件：{}.{}--包含的{}'.format(self.file_name, self.file_type, df_1.columns))
+                        return df_1
+                    else:
+                        logger.info('原始工作簿{}存在多个sheet，如下：\n {}'.format(self.file_name, _df.sheet_names))
+                        logger.info('其中[{}]---包含的{}'.format(_df.sheet_names[0], _df.parse(_df.sheet_names[0]).columns))
+                        return _df
+                except Exception as e:
+                    logger.error(e)
+                    sys.exit()
+
 
     def __cache__(self, df):
+        col_types = list(set(df.dtypes.astype(str).to_list()))
+        for _i in col_types:
+            if _i not in ['float64', 'int64']:
+                logger.debug('存在无法转换为ndarray的数据类型：{}.直接读取，不做缓存！'.format(_i))
+                return 0
         df_c = np.array(df.columns.values)
         data_ndarray = df.to_numpy()
         np.save(self.npy_path, data_ndarray)
@@ -80,10 +86,10 @@ class ReadData(object):
         """
         _temp = os.getenv('TEMP')
         if os.path.exists('/cache'):
-            logger.info('/cache')
+            logger.debug('/cache')
             return '/cache'
         elif os.path.exists(_temp):
-            logger.info(_temp)
+            logger.debug(_temp)
             return _temp
         else:
             logger.info(os.getcwd())
@@ -91,7 +97,8 @@ class ReadData(object):
 
     @property
     def get_df(self):
-        return self.__read_data()
+        df = self.__read_data()
+        return df
 
 
 if __name__ == '__main__':

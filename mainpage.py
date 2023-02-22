@@ -140,9 +140,9 @@ class MainUI:
                         f.seek(0, 0)
                         f_line = f.readlines()
                         if self.name_choice == '时间':
-                            name = f_line[3][:23].replace(" ", '-').replace("/", '-').replace(":", '-') + '.xlsx'
+                            name = f_line[3][6:23].replace("/", '_').replace(":", '_') + '.xlsx'
                         else:
-                            name = os.path.splitext(os.path.split(i)[1])[0].replace(".", '-') + '.xlsx'
+                            name = os.path.splitext(os.path.split(i)[1])[0].replace(".", '．') + '.xlsx'
                         self.ui.tab1_console.appendPlainText("    [%s] ---> [%s] " % (os.path.split(i)[1], name))
                         self.ui.tab1_target_textedit.appendPlainText(name)
                         # root.update()

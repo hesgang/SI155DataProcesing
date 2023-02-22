@@ -20,6 +20,8 @@ PyQt5
 PySide2
 html5lib
 beautifulsoup4
+PyWavelets
+matplotlib
 '''
 
 # git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
