@@ -95,16 +95,20 @@ class ReadData(object):
             logger.info(os.getcwd())
             return os.getcwd()
 
-    @property
-    def get_df(self):
+    def get_df(self,
+               cols: list[str] = []
+               ) -> pd.DataFrame:
         df = self.__read_data()
-        return df
+        if len(cols) == 0:
+            return df
+        else:
+            return df[cols]
 
 
 if __name__ == '__main__':
     start_time = time.time()
     # f = pd.ExcelFile(r'D:\Temp\滑动4N-全过程.xlsx')
-    aa = ReadData(r'D:\Temp\滑动4N-全过程.xlsx').get_df
+    aa = ReadData(r'D:\Temp\100g-400g滑动\1N.xlsx').get_df()
     print(aa.head())
     end = time.time() - start_time
     print('总耗时：%s' % end)

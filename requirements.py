@@ -22,6 +22,7 @@ html5lib
 beautifulsoup4
 PyWavelets
 matplotlib
+scikit-learn
 '''
 
 # git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
