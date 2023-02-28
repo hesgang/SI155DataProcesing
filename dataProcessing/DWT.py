@@ -19,7 +19,7 @@ def TimeFrequencyCWT(data, fs, totalscal, wavelet='cgau8'):
     cparam = 2 * wcf * totalscal
     scales = cparam/np.arange(totalscal, 1, -1)
     # 连续小波变换
-    [cwtmatr, frequencies] = pywt.cwt(data, scales, wavelet, 1.0/fs)
+    [cwtmatr, frequencies] = pywt.dwt(data, scales, wavelet)
     # 绘图
     plt.figure(figsize=(8, 4))
     plt.subplot(211)
@@ -27,6 +27,7 @@ def TimeFrequencyCWT(data, fs, totalscal, wavelet='cgau8'):
     plt.xlabel(u"time(s)")
     plt.title(u"Time spectrum")
     plt.subplot(212)
+    # plt.imshow(cwtmatr, extent=[-1, 1, 1, 31], cmap='PRGn', aspect='auto', vmax = abs(cwtmatr).max(), vmin = -abs(cwtmatr).max())
     plt.contourf(t, frequencies, abs(cwtmatr))
     plt.ylabel(u"freq(Hz)")
     plt.xlabel(u"time(s)")
@@ -35,6 +36,9 @@ def TimeFrequencyCWT(data, fs, totalscal, wavelet='cgau8'):
 
 
 if __name__ == '__main__':
-    df = ReadData(r'C:\Users\He\OneDrive\科研\A大论文\5、特征辨识和解耦\数据\1N.xlsx').get_df
-    data = df['w-FBG1'][4000:8000]
-    TimeFrequencyCWT(data, fs=200, totalscal=4000, wavelet='cgau8')
+    df = ReadData(r'E:\Documents\OneDrive\科研\A大论文\4、实验\数据处理\滑动实验\1N.xlsx').get_df
+    dff = df.parse('Sheet1')
+    data1 = dff['w-FBG1']
+    # df = ReadData(r'E:\Documents\OneDrive\小波变换9.13\总\1N.xlsx').get_df
+    # data1 = df['C']
+    TimeFrequencyCWT(data1, fs=1000, totalscal=30, wavelet='haar')

@@ -13,14 +13,22 @@ from PySide2.QtUiTools import QUiLoader
 from PySide2.QtCore import QFile
 # from lib.share import SI
 
+
+def f2(x):
+    return x + (random_() * 10 + 45.787)/1000
+
+
+def f1(x):
+    return x + (random_() * 10 + 13.907)/1000
+
+
 start_time = time.time()
 if __name__ == '__main__':
-    aa = ReadData(r'C:\Users\He\Desktop\xiepo.xlsx').get_df
-    print(aa.head())
-    for cols in aa.columns:
-        for index in range(len(aa[cols])):
-            aa[cols][index] = aa[cols][index] + random_()
-    aa.to_excel(r'C:\Users\He\Desktop\xiepo2.xlsx')
+    df1 = ReadData(r'D:\触觉与温度耦合\40-0N.xlsx').get_df
+    print(df1.head())
+    df1['FBG2'] = df1['FBG2'].map(f2)
+    df1['FBG1'] = df1['FBG1'].map(f1)
+    df1.to_excel(r'D:\触觉与温度耦合\40-100N.xlsx', index=False)
     end = time.time() - start_time
     print('总耗时：%s' % end)
 
