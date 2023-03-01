@@ -29,6 +29,7 @@ class ReadData(object):
         self.file_type = self.file.split('.')[1]
         self.npy_path = os.path.join(self.tmp, self.b64_name + '.npy')
         self.npy_c_path = os.path.join(self.tmp, self.b64_name + '_c' + '.npy')
+        self.df = self.__read_data()
         # self.sheet_name = sheet_name
 
     def __read_data(self):
@@ -113,11 +114,10 @@ class ReadData(object):
     def get_df(self,
                cols: list[str] = []
                ) -> pd.DataFrame:
-        df = self.__read_data()
         if len(cols) == 0:
-            return df
+            return self.df
         else:
-            return df[cols]
+            return self.df[cols]
 
 
 if __name__ == '__main__':
