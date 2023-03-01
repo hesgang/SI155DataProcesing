@@ -7,7 +7,7 @@ import numpy as np
 
 
 def random_():
-    return np.random.uniform(-4, 4)
+    return np.random.uniform(-1, 1)
 
 
 if __name__ == '__main__':
