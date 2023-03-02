@@ -24,12 +24,7 @@ def f1(x):
 
 start_time = time.time()
 if __name__ == '__main__':
-    df1 = ReadData(r'D:\触觉与温度耦合\40-0N.xlsx').get_df
-    print(df1.head())
-    df1['FBG2'] = df1['FBG2'].map(f2)
-    df1['FBG1'] = df1['FBG1'].map(f1)
-    df1.to_excel(r'D:\触觉与温度耦合\40-100N.xlsx', index=False)
-    end = time.time() - start_time
-    print('总耗时：%s' % end)
+    df = pd.read_csv(r'C:\Users\He\OneDrive\触觉与温度耦合\dataset.csv')
+    print(df.head())
 
 

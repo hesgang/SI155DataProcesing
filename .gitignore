@@ -7,3 +7,5 @@ build
 dist
 __pycache__
 .log
+/dataProcessing/log.log
+/log.log

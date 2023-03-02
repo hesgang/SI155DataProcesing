@@ -83,6 +83,13 @@ class ReadData(object):
                     logger.error(e)
                     sys.exit()
 
+        elif self.file_type == 'csv':
+            df_1 = pd.read_csv(self.excel_path)
+            logger.info('CSV文件：{}.{}--包含的{}'.format(self.file_name, self.file_type, df_1.columns))
+            return df_1
+        else:
+            raise TypeError
+
     def __cache__(self, df):
         col_types = list(set(df.dtypes.astype(str).to_list()))
         for _i in col_types:
