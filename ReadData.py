@@ -24,11 +24,15 @@ class ReadData(object):
         self.tmp = self.__getTemp__()
         self.excel_path = excel_path
         self.path, self.file = os.path.split(self.excel_path)
+        self.cache_file_name = base64.b64encode(self.excel_path.encode('utf-8')).decode('utf-8')
+        self.cache_file = os.path.join(self.tmp, self.cache_file_name+'.csv')
+        # print(base64.b64decode(self.cache_file).decode('utf-8'))
         self.file_name = self.file.split('.')[0]
         self.b64_name = base64.b64encode(self.file_name.encode('utf-8')).decode('utf-8')
         self.file_type = self.file.split('.')[1]
         self.npy_path = os.path.join(self.tmp, self.b64_name + '.npy')
         self.npy_c_path = os.path.join(self.tmp, self.b64_name + '_c' + '.npy')
+
         self.df = self.__read_data()
         # self.sheet_name = sheet_name
 
@@ -43,11 +47,11 @@ class ReadData(object):
                 try:
                     # 根据文件修改时间，选择最新的读取
                     excel_t = os.path.getmtime(self.excel_path)
-                    npy_t = os.path.getmtime(self.npy_path)
-                    if npy_t > excel_t:
-                        _df = np.load(self.npy_path, allow_pickle=True)
-                        df_c = np.load(self.npy_c_path, allow_pickle=True)
-                        _df = pd.DataFrame(_df, columns=df_c)
+                    cache_t = os.path.getmtime(self.cache_file)
+                    if cache_t > excel_t:
+                        # _df = np.load(self.npy_path, allow_pickle=True)
+                        # df_c = np.load(self.npy_c_path, allow_pickle=True)
+                        _df = pd.read_csv(self.cache_file)
                         logger.info('缓存文件：{}.{}--包含的{}'.format(self.file_name, self.file_type, _df.columns))
                         return _df
                     else:
@@ -91,15 +95,16 @@ class ReadData(object):
             raise TypeError
 
     def __cache__(self, df):
-        col_types = list(set(df.dtypes.astype(str).to_list()))
-        for _i in col_types:
-            if _i not in ['float64', 'int64']:
-                logger.debug('存在无法转换为ndarray的数据类型：{}.直接读取，不做缓存！'.format(_i))
-                return 0
-        df_c = np.array(df.columns.values)
-        data_ndarray = df.to_numpy()
-        np.save(self.npy_path, data_ndarray)
-        np.save(self.npy_c_path, df_c)
+        df.to_csv(self.cache_file, index=False)
+        # col_types = list(set(df.dtypes.astype(str).to_list()))
+        # for _i in col_types:
+        #     if _i not in ['float64', 'int64']:
+        #         logger.debug('存在无法转换为ndarray的数据类型：{}.直接读取，不做缓存！'.format(_i))
+        #         return 0
+        # df_c = np.array(df.columns.values)
+        # data_ndarray = df.to_numpy()
+        # np.save(self.npy_path, data_ndarray)
+        # np.save(self.npy_c_path, df_c)
 
     @staticmethod
     def __getTemp__() -> str:
@@ -130,7 +135,7 @@ class ReadData(object):
 if __name__ == '__main__':
     start_time = time.time()
     # f = pd.ExcelFile(r'D:\Temp\滑动4N-全过程.xlsx')
-    aa = ReadData(r'D:\Temp\100g-400g滑动\1N.xlsx').get_df()
+    aa = ReadData(r'D:\Temp\Date--2022-7-26-16-52-4.xlsx').get_df()
     print(aa.head())
     end = time.time() - start_time
     print('总耗时：%s' % end)
