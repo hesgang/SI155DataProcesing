@@ -71,12 +71,13 @@ def rfc_study_line():
     x, y = get_dataset(os.path.join(OneDrive, r'触觉与温度耦合\分类\dataset.csv'), 'rfc')
     scores = []
 
-    for i in range(1, 201):
+    for i in range(1, 50):
         _rfc = RandomForestClassifier(n_estimators=i, n_jobs=-1)
         scores.append(cross_val_score(_rfc, x, y, cv=10).mean())
         print(time.time() - start_time)
 
-    plt.plot(range(1, 201), scores)
+    print(scores)
+    plt.plot(range(1, 50), scores)
     plt.show()
     with open(os.path.join(OneDrive, r'触觉与温度耦合\分类\scores.txt'), 'wb') as f:
         f.writelines(scores)
@@ -85,11 +86,28 @@ def rfc_study_line():
     print(max(scores), scores.index(max(scores)))
 
 
+def run_rfr():
+    # 加载数据集
+    x, y = get_dataset(os.path.join(OneDrive, r'触觉与温度耦合\耦合\耦合数据汇总.xlsx'), 'rfr')
+    scores = []
+    # 分割数据集
+    x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+    # 建立随机森林回归器模型，并获得得分
+    _rfr = RandomForestRegressor()
+    _rfr.fit(x_train, y_train)
+    p = _rfr.predict(x_test)
+    for _i in range(20):
+        print(p[_i], y_test[_i])
+
+
+
+
 if __name__ == '__main__':
     start_time = time.time()
     OneDrive = os.getenv('OneDriveConsumer')
-    run_rfc()
+    # run_rfc()
     # rfc_study_line()
+    run_rfr()
     # rfc = joblib.load(os.path.join(OneDrive, r'触觉与温度耦合\分类\rfc.pkl'))
     # predict_data = ReadData(os.path.join(OneDrive, r'触觉与温度耦合\分类\验证数据.xlsx')).get_df()
     # train_data = ReadData(os.path.join(OneDrive, r'触觉与温度耦合\分类\dataset.csv')).get_df()
