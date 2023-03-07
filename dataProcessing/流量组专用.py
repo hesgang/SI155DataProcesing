@@ -94,6 +94,6 @@ if __name__ == '__main__':
         print('处理文件：{}-耗时：{}'.format(i, time.time() - start_time1))
     end = time.time() - start_time
     print('处理总耗时：%s' % end)
-    writer.save()
+    writer.close()
     end = time.time() - start_time
     print('总耗时：%s' % end)

@@ -23,6 +23,8 @@ beautifulsoup4
 PyWavelets
 matplotlib
 scikit-learn
+sympy
+tqdm
 '''
 
 # git+https://github.com/philferriere/cocoapi.git#subdirectory=PythonAPI
